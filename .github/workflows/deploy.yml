@@ -10,29 +10,25 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout repo
-      uses: actions/checkout@v3
+      - name: Checkout repo
+        uses: actions/checkout@v3
 
-    - name: Install dependencies
-      run: sudo apt-get update && sudo apt-get install -y unzip curl
+      - name: Install Python dependencies
+        run: |
+          sudo apt-get update
+          pip install snowflake-cli-labs
 
-    - name: Download and install SnowSQL
-      run: |
-        pip install snowflake-cli-labs
+      - name: Set up Snowflake config
+        run: |
+          snowcli config add --name github-ci \
+            --account ${{ secrets.SNOWFLAKE_ACCOUNT }} \
+            --user ${{ secrets.SNOWFLAKE_USER }} \
+            --password ${{ secrets.SNOWFLAKE_PASSWORD }} \
+            --role ${{ secrets.SNOWFLAKE_ROLE }} \
+            --warehouse ${{ secrets.SNOWFLAKE_WAREHOUSE }} \
+            --database ${{ secrets.SNOWFLAKE_DATABASE }} \
+            --schema ${{ secrets.SNOWFLAKE_SCHEMA }}
 
-
-    - name: Install SnowSQL deb package
-      run: sudo dpkg -i snowsql_1.2.21_amd64.deb
-
-    - name: Verify snowsql installation
-      run: snowsql --version
-
-    - name: Run deploy.sql on Snowflake
-      env:
-        SNOWFLAKE_ACCOUNT: ${{ secrets.SNOWFLAKE_ACCOUNT }}
-        SNOWFLAKE_USER: ${{ secrets.SNOWFLAKE_USER }}
-        SNOWFLAKE_PASSWORD: ${{ secrets.SNOWFLAKE_PASSWORD }}
-        SNOWFLAKE_WAREHOUSE: ${{ secrets.SNOWFLAKE_WAREHOUSE }}
-        SNOWFLAKE_DATABASE: ${{ secrets.SNOWFLAKE_DATABASE }}
-        SNOWFLAKE_SCHEMA: ${{ secrets.SNOWFLAKE_SCHEMA }}
-      run: snowsql -a $SNOWFLAKE_ACCOUNT -u $SNOWFLAKE_USER -w $SNOWFLAKE_WAREHOUSE -d $SNOWFLAKE_DATABASE -s $SNOWFLAKE_SCHEMA -f ./sql/deploy.sql
+      - name: Deploy SQL to Snowflake
+        run: |
+          snowcli sql run -f ./sql/deploy.sql --connection github-ci
