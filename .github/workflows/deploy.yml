@@ -43,8 +43,10 @@ jobs:
     - name: Download and install SnowSQL
       run: |
         wget https://sfc-repo.snowflakecomputing.com/snowsql/bootstrap/1.2/linux_x86_64/snowsql-1.2.21-linux_x86_64.bash
-        bash snowsql-1.2.21-linux_x86_64.bash -b -f
-        echo "$HOME/bin" >> $GITHUB_PATH
+        chmod +x snowsql-1.2.21-linux_x86_64.bash
+        ./snowsql-1.2.21-linux_x86_64.bash -y -i $HOME/snowsql
+        echo "$HOME/snowsql/bin" >> $GITHUB_PATH
+
 
     - name: Verify snowsql installation
       run: snowsql --version
