@@ -10,53 +10,30 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout repo
-      uses: actions/checkout@v3
+      - name: Checkout repository
+        uses: actions/checkout@v3
 
-    - name: Install dependencies
-      run: sudo apt-get update && sudo apt-get install -y unzip curl
+      - name: Install dependencies
+        run: sudo apt-get update && sudo apt-get install -y unzip curl
 
-    # - name: Install snowflake-cli-labs via pip
-    #   run: pip install --user snowflake-cli-labs
+      - name: Download and install SnowSQL
+        run: |
+          curl -O https://sfc-repo.snowflakecomputing.com/snowsql/bootstrap/1.2/linux_x86_64/snowsql-1.2.21-linux_x86_64.bash
+          chmod +x snowsql-1.2.21-linux_x86_64.bash
+          mkdir -p $HOME/snowsql
+          SNOWSQL_DEST=$HOME/snowsql SNOWSQL_LOGIN_SHELL=$HOME/.bashrc ./snowsql-1.2.21-linux_x86_64.bash
+          echo "$HOME/snowsql/bin" >> $GITHUB_PATH
 
-    # - name: Add ~/.local/bin to PATH
-    #   run: echo "${HOME}/.local/bin" >> $GITHUB_PATH
+      - name: Verify SnowSQL installation
+        run: snowsql --version
 
-    # - name: Verify snowcli installation
-    #   run: |
-    #     echo "PATH is: $PATH"
-    #     snowcli --version
-
-    # - name: Run deploy.sql on Snowflake
-    #   env:
-    #     SNOWFLAKE_ACCOUNT: ${{ secrets.SNOWFLAKE_ACCOUNT }}
-    #     SNOWFLAKE_USER: ${{ secrets.SNOWFLAKE_USER }}
-    #     SNOWFLAKE_PASSWORD: ${{ secrets.SNOWFLAKE_PASSWORD }}
-    #     SNOWFLAKE_WAREHOUSE: ${{ secrets.SNOWFLAKE_WAREHOUSE }}
-    #     SNOWFLAKE_DATABASE: ${{ secrets.SNOWFLAKE_DATABASE }}
-    #     SNOWFLAKE_SCHEMA: ${{ secrets.SNOWFLAKE_SCHEMA }}
-    #   run: snowcli sql execute --file ./sql/deploy.sql
-
-# ---------------------------------------------------
-# Agar upar wala method nahi chale, toh yeh fallback try karna:
-
-    - name: Download and install SnowSQL
-      run: |
-        wget https://sfc-repo.snowflakecomputing.com/snowsql/bootstrap/1.2/linux_x86_64/snowsql-1.2.21-linux_x86_64.bash
-        chmod +x snowsql-1.2.21-linux_x86_64.bash
-        ./snowsql-1.2.21-linux_x86_64.bash -y -i $HOME/snowsql
-        echo "$HOME/snowsql/bin" >> $GITHUB_PATH
-
-
-    - name: Verify snowsql installation
-      run: snowsql --version
-
-    - name: Run deploy.sql on Snowflake
-      env:
-        SNOWFLAKE_ACCOUNT: ${{ secrets.SNOWFLAKE_ACCOUNT }}
-        SNOWFLAKE_USER: ${{ secrets.SNOWFLAKE_USER }}
-        SNOWFLAKE_PASSWORD: ${{ secrets.SNOWFLAKE_PASSWORD }}
-        SNOWFLAKE_WAREHOUSE: ${{ secrets.SNOWFLAKE_WAREHOUSE }}
-        SNOWFLAKE_DATABASE: ${{ secrets.SNOWFLAKE_DATABASE }}
-        SNOWFLAKE_SCHEMA: ${{ secrets.SNOWFLAKE_SCHEMA }}
-      run: snowsql -a $SNOWFLAKE_ACCOUNT -u $SNOWFLAKE_USER -w $SNOWFLAKE_WAREHOUSE -d $SNOWFLAKE_DATABASE -s $SNOWFLAKE_SCHEMA -f ./sql/deploy.sql
+      - name: Run deploy.sql on Snowflake
+        env:
+          SNOWFLAKE_ACCOUNT: ${{ secrets.SNOWFLAKE_ACCOUNT }}
+          SNOWFLAKE_USER: ${{ secrets.SNOWFLAKE_USER }}
+          SNOWFLAKE_PASSWORD: ${{ secrets.SNOWFLAKE_PASSWORD }}
+          SNOWFLAKE_WAREHOUSE: ${{ secrets.SNOWFLAKE_WAREHOUSE }}
+          SNOWFLAKE_DATABASE: ${{ secrets.SNOWFLAKE_DATABASE }}
+          SNOWFLAKE_SCHEMA: ${{ secrets.SNOWFLAKE_SCHEMA }}
+        run: |
+          snowsql -a $SNOWFLAKE_ACCOUNT -u $SNOWFLAKE_USER -w $SNOWFLAKE_WAREHOUSE -d $SNOWFLAKE_DATABASE -s $SNOWFLAKE_SCHEMA -f ./sql/deploy.sql
