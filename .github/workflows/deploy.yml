@@ -10,47 +10,47 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
+    - name: Checkout repository
+      uses: actions/checkout@v3
 
-      - name: Install dependencies
-        run: sudo apt-get update && sudo apt-get install -y unzip curl
+    - name: Check required tools and versions
+      run: |
+        set -x
+        which bash
+        bash --version
+        which curl
+        curl --version
+        which python3 || which python
+        python3 --version || python --version
+        ldd --version
+        ldd /bin/bash || true
 
-      - name: Pre-check for SnowSQL install
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y unzip libncurses6
-          mkdir -p $HOME/snowflake/snowsql/bin
- 
+    - name: Create install directory
+      run: mkdir -p $HOME/snowflake/snowsql
 
-      - name: Install SnowSQL v1.2.24
-        run: |
-          set -x
-          mkdir -p $HOME/snowflake/snowsql
-          curl -O https://sfc-repo.snowflakecomputing.com/snowsql/bootstrap/1.2/linux_x86_64/snowsql-1.2.24-linux_x86_64.bash
-          chmod +x snowsql-1.2.24-linux_x86_64.bash
-          ./snowsql-1.2.24-linux_x86_64.bash -y -d $HOME/snowflake/snowsql || true
-          echo "========= INSTALL LOG ========="
-          cat $HOME/snowflake/snowsql/install.log || echo "No install.log found"
-          echo "========= BINARY PATH ========="
-          ls -l $HOME/snowflake/snowsql/bin
-          echo "$HOME/snowflake/snowsql/bin" >> $GITHUB_PATH
+    - name: Download and extract SnowSQL
+      run: |
+        set -x
+        curl -L -o snowsql.tar.gz https://sfc-repo.snowflakecomputing.com/snowsql/bootstrap/1.2/linux_x86_64/snowsql-1.2.24-linux_x86_64.tar.gz
+        tar -xzf snowsql.tar.gz -C $HOME/snowflake/snowsql
 
+    - name: Add SnowSQL to PATH
+      run: echo "$HOME/snowflake/snowsql/snowsql-1.2.24-linux_x86_64/bin" >> $GITHUB_PATH
 
+    - name: Verify SnowSQL installation
+      run: |
+        set -x
+        $HOME/snowflake/snowsql/snowsql-1.2.24-linux_x86_64/bin/snowsql --version
+        ls -l $HOME/snowflake/snowsql/snowsql-1.2.24-linux_x86_64/bin
 
-
-      - name: Verify SnowSQL installation
-        run: |
-          snowsql --version
-
-      - name: Run deploy.sql on Snowflake
-        env:
+    - name: Run deploy.sql on Snowflake
+      env:
           SNOWFLAKE_ACCOUNT: ${{ secrets.SNOWFLAKE_ACCOUNT }}
           SNOWFLAKE_USER: ${{ secrets.SNOWFLAKE_USER }}
           SNOWFLAKE_PASSWORD: ${{ secrets.SNOWFLAKE_PASSWORD }}
           SNOWFLAKE_WAREHOUSE: ${{ secrets.SNOWFLAKE_WAREHOUSE }}
           SNOWFLAKE_DATABASE: ${{ secrets.SNOWFLAKE_DATABASE }}
           SNOWFLAKE_SCHEMA: ${{ secrets.SNOWFLAKE_SCHEMA }}
-        run: |
+      run: |
           export PATH=$HOME/snowflake/snowsql/bin:$PATH
           snowsql -a $SNOWFLAKE_ACCOUNT -u $SNOWFLAKE_USER -w $SNOWFLAKE_WAREHOUSE -d $SNOWFLAKE_DATABASE -s $SNOWFLAKE_SCHEMA -f ./sql/deploy.sql
