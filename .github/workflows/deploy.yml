@@ -30,6 +30,9 @@ jobs:
           chmod +x snowsql-1.2.21-linux_x86_64.bash
           ./snowsql-1.2.21-linux_x86_64.bash -y -d $HOME/snowflake/snowsql || (echo "Installer failed" && ls -la $HOME/snowflake/snowsql && exit 1)
           echo "$HOME/snowflake/snowsql/bin" >> $GITHUB_PATH
+          cat $HOME/snowflake/snowsql/install.log || echo "No install.log found"
+          ls -R $HOME/snowflake/snowsql
+          echo "$HOME/snowflake/snowsql/bin" >> $GITHUB_PATH
 
 
 
