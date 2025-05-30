@@ -19,17 +19,18 @@ jobs:
       - name: Pre-check for SnowSQL install
         run: |
           sudo apt-get update
-          sudo apt-get install -y unzip libncurses5
+          sudo apt-get install -y unzip libncurses6
           mkdir -p $HOME/snowflake/snowsql/bin
  
 
       - name: Download and install SnowSQL (Debug)
         run: |
-            set -x  # enable debug mode
-            curl -O https://sfc-repo.snowflakecomputing.com/snowsql/bootstrap/1.2/linux_x86_64/snowsql-1.2.21-linux_x86_64.bash
-            chmod +x snowsql-1.2.21-linux_x86_64.bash
-            ./snowsql-1.2.21-linux_x86_64.bash -y -d $HOME/snowflake/snowsql || (echo "Installer failed" && ls -la $HOME/snowflake/snowsql && exit 1)
-            echo "$HOME/snowflake/snowsql/bin" >> $GITHUB_PATH
+          set -x  # Enable command trace
+          curl -O https://sfc-repo.snowflakecomputing.com/snowsql/bootstrap/1.2/linux_x86_64/snowsql-1.2.21-linux_x86_64.bash
+          chmod +x snowsql-1.2.21-linux_x86_64.bash
+          ./snowsql-1.2.21-linux_x86_64.bash -y -d $HOME/snowflake/snowsql || (echo "Installer failed" && ls -la $HOME/snowflake/snowsql && exit 1)
+          echo "$HOME/snowflake/snowsql/bin" >> $GITHUB_PATH
+
 
 
       - name: Verify SnowSQL installation
