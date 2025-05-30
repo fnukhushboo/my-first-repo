@@ -27,7 +27,7 @@ jobs:
         run: |
           set -x
           mkdir -p $HOME/snowflake/snowsql
-          curl -O https://sfc-repo.snowflakecomputing.com/snowsql/bootstrap/1.2/linux_x86_64/index.html/snowsql-1.2.24-linux_x86_64
+          curl -O https://sfc-repo.snowflakecomputing.com/snowsql/bootstrap/1.2/linux_x86_64/snowsql-1.2.24-linux_x86_64.bash
           chmod +x snowsql-1.2.24-linux_x86_64
           ./snowsql-1.2.24-linux_x86_64 -y -d $HOME/snowflake/snowsql
           echo "$HOME/snowflake/snowsql/bin" >> $GITHUB_PATH
