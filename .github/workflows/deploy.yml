@@ -28,14 +28,25 @@ jobs:
     - name: Create install directory
       run: mkdir -p $HOME/snowflake/snowsql
 
-    - name: Download and install SnowSQL via .bash installer
+    - name: Ensure Python is available
+      run: which python || which python3
+
+
+    - name: Install SnowSQL
       run: |
         set -x
         mkdir -p $HOME/snowflake/snowsql
         curl -O https://sfc-repo.snowflakecomputing.com/snowsql/bootstrap/1.2/linux_x86_64/snowsql-1.2.24-linux_x86_64.bash
         chmod +x snowsql-1.2.24-linux_x86_64.bash
-        ./snowsql-1.2.24-linux_x86_64.bash -y -d $HOME/snowflake/snowsql
+        ./snowsql-1.2.24-linux_x86_64.bash -y -v -d $HOME/snowflake/snowsql || {
+          echo "SnowSQL install failed!"
+          cat $HOME/snowflake/snowsql/install.log || echo "No install.log found"
+          exit 1
+        }
         echo "$HOME/snowflake/snowsql/bin" >> $GITHUB_PATH
+        ls -l $HOME/snowflake/snowsql/bin
+        $HOME/snowflake/snowsql/bin/snowsql --version
+
 
     - name: Verify SnowSQL installation
       run: |
