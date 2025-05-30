@@ -12,17 +12,14 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Install SnowSQL 1.2.21
+      - name: Install SnowSQL CLI via pip
         run: |
-          set -x
-          mkdir -p $HOME/snowflake/snowsql
-          curl -O https://sfc-repo.snowflakecomputing.com/snowsql/bootstrap/1.2/linux_x86_64/snowsql-1.2.21-linux_x86_64.bash
-          chmod +x snowsql-1.2.21-linux_x86_64.bash
-          # Remove SNOWSQL_LOGIN_SHELL to avoid /dev/null permission issue
-          SNOWSQL_DEST=$HOME/snowflake/snowsql ./snowsql-1.2.21-linux_x86_64.bash -y
-
-          # Add snowsql bin path to GITHUB_PATH for subsequent steps
-          echo "$HOME/snowflake/snowsql/bin" >> $GITHUB_PATH
+          python3 -m pip install --upgrade pip
+          pip install snowflake-cli
+          
+      - name: Verify SnowSQL
+        run: |
+          snowsql --version
 
 
 
