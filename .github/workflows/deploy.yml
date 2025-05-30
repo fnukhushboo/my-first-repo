@@ -23,23 +23,21 @@ jobs:
           mkdir -p $HOME/snowflake/snowsql/bin
  
 
-      - name: Install SnowSQL with debug logs
+      - name: Download & Extract SnowSQL (tar.gz version)
         run: |
           set -x
-          curl -O https://sfc-repo.snowflakecomputing.com/snowsql/bootstrap/1.2/linux_x86_64/snowsql-1.2.21-linux_x86_64.bash
-          chmod +x snowsql-1.2.21-linux_x86_64.bash
-          ./snowsql-1.2.21-linux_x86_64.bash -y -d $HOME/snowflake/snowsql || true
-          echo "Installer log output:"
-          cat $HOME/snowflake/snowsql/install.log || echo "No install.log found"
-          ls -R $HOME/snowflake/snowsql
-          echo "$HOME/snowflake/snowsql/bin" >> $GITHUB_PATH
+          mkdir -p $HOME/snowflake
+          curl -O https://sfc-repo.snowflakecomputing.com/snowsql/bootstrap/1.2/linux_x86_64/snowsql-1.2.21-linux_x86_64.tar.gz
+          tar -xvzf snowsql-1.2.21-linux_x86_64.tar.gz -C $HOME/snowflake
+          echo "$HOME/snowflake/snowsql-1.2.21-linux_x86_64/bin" >> $GITHUB_PATH
+          ls -l $HOME/snowflake/snowsql-1.2.21-linux_x86_64/bin
+
 
 
 
 
       - name: Verify SnowSQL installation
         run: |
-          export PATH=$HOME/snowflake/snowsql/bin:$PATH
           snowsql --version
 
       - name: Run deploy.sql on Snowflake
