@@ -20,12 +20,13 @@ jobs:
         run: |
           curl -O https://sfc-repo.snowflakecomputing.com/snowsql/bootstrap/1.2/linux_x86_64/snowsql-1.2.21-linux_x86_64.bash
           chmod +x snowsql-1.2.21-linux_x86_64.bash
-          mkdir -p $HOME/snowsql
-          SNOWSQL_DEST=$HOME/snowsql SNOWSQL_LOGIN_SHELL=$HOME/.bashrc ./snowsql-1.2.21-linux_x86_64.bash
-          echo "$HOME/snowsql/bin" >> $GITHUB_PATH
+          ./snowsql-1.2.21-linux_x86_64.bash -y -d $HOME/snowflake/snowsql
+          echo "$HOME/snowflake/snowsql/bin" >> $GITHUB_PATH
 
       - name: Verify SnowSQL installation
-        run: snowsql --version
+        run: |
+          export PATH=$HOME/snowflake/snowsql/bin:$PATH
+          snowsql --version
 
       - name: Run deploy.sql on Snowflake
         env:
@@ -36,4 +37,5 @@ jobs:
           SNOWFLAKE_DATABASE: ${{ secrets.SNOWFLAKE_DATABASE }}
           SNOWFLAKE_SCHEMA: ${{ secrets.SNOWFLAKE_SCHEMA }}
         run: |
+          export PATH=$HOME/snowflake/snowsql/bin:$PATH
           snowsql -a $SNOWFLAKE_ACCOUNT -u $SNOWFLAKE_USER -w $SNOWFLAKE_WAREHOUSE -d $SNOWFLAKE_DATABASE -s $SNOWFLAKE_SCHEMA -f ./sql/deploy.sql
