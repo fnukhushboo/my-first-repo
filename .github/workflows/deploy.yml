@@ -12,22 +12,15 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Install SnowSQL CLI via pip
+      - name: Install official SnowSQL CLI
         run: |
-          python3 -m pip install --upgrade pip
-          pip install snowflake-cli
-          
+          curl -O https://sfc-repo.snowflakecomputing.com/snowsql/bootstrap/bootstrap.sh
+          chmod +x bootstrap.sh
+          ./bootstrap.sh --yes
+          echo "export PATH=$HOME/.snowsql/bin:$PATH" >> $GITHUB_ENV
+
       - name: Verify SnowSQL
-        run: |
-          snowsql --version
-
-
-
-      - name: Verify SnowSQL installation
-        run: |
-          $HOME/snowflake/snowsql/bin/snowsql -v
-          which snowsql || echo "snowsql not found in PATH yet"
-
+        run: snowsql --version
 
       - name: Run deploy.sql on Snowflake
         env:
@@ -38,7 +31,6 @@ jobs:
           SNOWFLAKE_DATABASE: ${{ secrets.SNOWFLAKE_DATABASE }}
           SNOWFLAKE_SCHEMA: ${{ secrets.SNOWFLAKE_SCHEMA }}
         run: |
-          export PATH=$HOME/snowflake/snowsql/bin:$PATH
           snowsql -a $SNOWFLAKE_ACCOUNT -u $SNOWFLAKE_USER -p $SNOWFLAKE_PASSWORD \
             -w $SNOWFLAKE_WAREHOUSE -d $SNOWFLAKE_DATABASE -s $SNOWFLAKE_SCHEMA \
             -f ./sql/deploy.sql
