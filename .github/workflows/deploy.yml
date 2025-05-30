@@ -23,16 +23,17 @@ jobs:
           mkdir -p $HOME/snowflake/snowsql/bin
  
 
-      - name: Download and install SnowSQL (Debug)
+      - name: Install SnowSQL with debug logs
         run: |
-          set -x  # Enable command trace
+          set -x
           curl -O https://sfc-repo.snowflakecomputing.com/snowsql/bootstrap/1.2/linux_x86_64/snowsql-1.2.21-linux_x86_64.bash
           chmod +x snowsql-1.2.21-linux_x86_64.bash
-          ./snowsql-1.2.21-linux_x86_64.bash -y -d $HOME/snowflake/snowsql || (echo "Installer failed" && ls -la $HOME/snowflake/snowsql && exit 1)
-          echo "$HOME/snowflake/snowsql/bin" >> $GITHUB_PATH
+          ./snowsql-1.2.21-linux_x86_64.bash -y -d $HOME/snowflake/snowsql || true
+          echo "Installer log output:"
           cat $HOME/snowflake/snowsql/install.log || echo "No install.log found"
           ls -R $HOME/snowflake/snowsql
           echo "$HOME/snowflake/snowsql/bin" >> $GITHUB_PATH
+
 
 
 
