@@ -27,7 +27,7 @@ jobs:
         run: |
           set -x
           mkdir -p $HOME/snowflake
-          curl -O https://sfc-repo.snowflakecomputing.com/snowsql/bootstrap/1.2/linux_x86_64/snowsql-linux_x86_64-1.2.24.tar.gz
+          curl -O https://sfc-repo.snowflakecomputing.com/snowsql/bootstrap/1.2/linux_x86_64/index.html/snowsql-1.2.24-linux_x86_64
           tar -xvzf snowsql-linux_x86_64-1.2.24.tar.gz -C $HOME/snowflake
           echo "$HOME/snowflake/snowsql-linux_x86_64-1.2.24/bin" >> $GITHUB_PATH
           ls -l $HOME/snowflake/snowsql-linux_x86_64-1.2.24/bin
