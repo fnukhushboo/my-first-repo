@@ -12,12 +12,13 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Install official SnowSQL CLI
+      - name: Install SnowSQL CLI binary
         run: |
-          curl -O https://sfc-repo.snowflakecomputing.com/snowsql/bootstrap/bootstrap.sh
-          chmod +x bootstrap.sh
-          ./bootstrap.sh --yes
-          echo "export PATH=$HOME/.snowsql/bin:$PATH" >> $GITHUB_ENV
+          curl -O https://sfc-repo.snowflakecomputing.com/snowsql/bootstrap/1.2.27/linux_x86_64/snowsql-linux_x86_64
+          chmod +x snowsql-linux_x86_64
+          mkdir -p $HOME/.local/bin
+          mv snowsql-linux_x86_64 $HOME/.local/bin/snowsql
+          echo "$HOME/.local/bin" >> $GITHUB_PATH
 
       - name: Verify SnowSQL
         run: snowsql --version
