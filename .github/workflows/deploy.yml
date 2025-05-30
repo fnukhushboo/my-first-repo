@@ -28,20 +28,19 @@ jobs:
     - name: Create install directory
       run: mkdir -p $HOME/snowflake/snowsql
 
-    - name: Download and extract SnowSQL
+    - name: Download and install SnowSQL via .bash installer
       run: |
         set -x
-        curl -L -o snowsql.tar.gz https://sfc-repo.snowflakecomputing.com/snowsql/bootstrap/1.2/linux_x86_64/snowsql-1.2.24-linux_x86_64.tar.gz
-        tar -xzf snowsql.tar.gz -C $HOME/snowflake/snowsql
-
-    - name: Add SnowSQL to PATH
-      run: echo "$HOME/snowflake/snowsql/snowsql-1.2.24-linux_x86_64/bin" >> $GITHUB_PATH
+        mkdir -p $HOME/snowflake/snowsql
+        curl -O https://sfc-repo.snowflakecomputing.com/snowsql/bootstrap/1.2/linux_x86_64/snowsql-1.2.24-linux_x86_64.bash
+        chmod +x snowsql-1.2.24-linux_x86_64.bash
+        ./snowsql-1.2.24-linux_x86_64.bash -y -d $HOME/snowflake/snowsql
+        echo "$HOME/snowflake/snowsql/bin" >> $GITHUB_PATH
 
     - name: Verify SnowSQL installation
       run: |
         set -x
         $HOME/snowflake/snowsql/snowsql-1.2.24-linux_x86_64/bin/snowsql --version
-        ls -l $HOME/snowflake/snowsql/snowsql-1.2.24-linux_x86_64/bin
 
     - name: Run deploy.sql on Snowflake
       env:
