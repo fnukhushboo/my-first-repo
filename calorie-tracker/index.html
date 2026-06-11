@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Calorie & Macro Tracker</title>
+<link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+<header class="topbar">
+  <h1>Calorie &amp; Macro Tracker</h1>
+  <nav class="tabs">
+    <button class="tab-btn active" data-tab="meals">Meal Builder</button>
+    <button class="tab-btn" data-tab="summary">7-Day Summary</button>
+    <button class="tab-btn" data-tab="health">Health Data</button>
+    <button class="tab-btn" data-tab="foods">Food Database</button>
+  </nav>
+</header>
+
+<main>
+  <!-- ============ MEAL BUILDER ============ -->
+  <section id="tab-meals" class="tab-panel active">
+    <div class="panel-header">
+      <label for="meal-date">Date:</label>
+      <input type="date" id="meal-date" />
+      <div class="targets-summary" id="targets-readout"></div>
+    </div>
+
+    <div id="sections-container"></div>
+
+    <div class="day-total card">
+      <h2>Day Total</h2>
+      <div id="day-total-bars" class="macro-bars"></div>
+      <table class="totals-table">
+        <thead>
+          <tr><th></th><th>Calories</th><th>Protein</th><th>Carb</th><th>Fat</th><th>Fiber</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Total</td>
+            <td id="tot-cal">0</td>
+            <td id="tot-protein">0</td>
+            <td id="tot-carb">0</td>
+            <td id="tot-fat">0</td>
+            <td id="tot-fiber">0</td>
+          </tr>
+          <tr class="target-row">
+            <td>Target</td>
+            <td id="target-cal">-</td>
+            <td id="target-protein">-</td>
+            <td id="target-carb">-</td>
+            <td id="target-fat">-</td>
+            <td id="target-fiber">-</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ============ 7-DAY SUMMARY ============ -->
+  <section id="tab-summary" class="tab-panel">
+    <div class="card">
+      <h2>Last 7 Days</h2>
+      <div class="table-scroll">
+        <table class="summary-table" id="summary-table">
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Calories</th>
+              <th>Protein (g)</th>
+              <th>Carb (g)</th>
+              <th>Fat (g)</th>
+              <th>Fiber (g)</th>
+            </tr>
+          </thead>
+          <tbody id="summary-body"></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ HEALTH DATA ============ -->
+  <section id="tab-health" class="tab-panel">
+    <div class="card">
+      <h2>Height (static)</h2>
+      <div class="inline-form">
+        <input type="text" id="height-input" placeholder="e.g. 5' 7&quot; or 170 cm" />
+        <button id="save-height-btn">Save</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Daily Weight</h2>
+      <div class="inline-form">
+        <input type="date" id="weight-date" />
+        <input type="number" step="0.1" id="weight-input" placeholder="Weight (lbs/kg)" />
+        <button id="add-weight-btn">Add / Update</button>
+      </div>
+      <div class="table-scroll">
+        <table class="data-table" id="weight-table">
+          <thead><tr><th>Date</th><th>Weight</th><th></th></tr></thead>
+          <tbody id="weight-body"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Body Measurements (fortnightly)</h2>
+      <div class="table-scroll">
+        <table class="data-table measurements-table" id="measurements-table">
+          <thead>
+            <tr>
+              <th>Date</th><th>Chest</th><th>Biceps (L/R)</th><th>Hips</th><th>Thighs (R/L)</th>
+              <th>Neck</th><th>Forearm (R/L)</th><th>Wrist (R/L)</th><th>Shoulder</th>
+              <th>Waist</th><th>Pant</th><th>Belly</th><th>Weight</th><th>BFP</th><th></th>
+            </tr>
+          </thead>
+          <tbody id="measurements-body"></tbody>
+          <tfoot>
+            <tr id="measurement-form-row">
+              <td><input type="date" data-field="date" /></td>
+              <td><input type="number" step="0.01" data-field="chest" /></td>
+              <td class="combo"><input type="number" step="0.01" data-field="bicepsL" placeholder="L" /><input type="number" step="0.01" data-field="bicepsR" placeholder="R" /></td>
+              <td><input type="number" step="0.01" data-field="hips" /></td>
+              <td class="combo"><input type="number" step="0.01" data-field="thighR" placeholder="R" /><input type="number" step="0.01" data-field="thighL" placeholder="L" /></td>
+              <td><input type="number" step="0.01" data-field="neck" /></td>
+              <td class="combo"><input type="number" step="0.01" data-field="forearmR" placeholder="R" /><input type="number" step="0.01" data-field="forearmL" placeholder="L" /></td>
+              <td class="combo"><input type="number" step="0.01" data-field="wristR" placeholder="R" /><input type="number" step="0.01" data-field="wristL" placeholder="L" /></td>
+              <td><input type="number" step="0.01" data-field="shoulder" /></td>
+              <td><input type="number" step="0.01" data-field="waist" /></td>
+              <td><input type="number" step="0.01" data-field="pant" /></td>
+              <td><input type="number" step="0.01" data-field="belly" /></td>
+              <td><input type="number" step="0.01" data-field="weight" /></td>
+              <td><input type="number" step="0.01" data-field="bfp" /></td>
+              <td><button id="add-measurement-btn">Add</button></td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ FOOD DATABASE ============ -->
+  <section id="tab-foods" class="tab-panel">
+    <div class="card">
+      <h2>Food Database <span class="hint">(values per 1 unit shown)</span></h2>
+      <div class="table-scroll">
+        <table class="data-table" id="food-table">
+          <thead>
+            <tr>
+              <th>Name</th><th>Unit</th><th>Calories</th><th>Protein</th><th>Carb</th><th>Fat</th><th>Fiber</th><th>Sugar</th><th></th>
+            </tr>
+          </thead>
+          <tbody id="food-body"></tbody>
+          <tfoot>
+            <tr id="food-form-row">
+              <td><input type="text" data-field="name" placeholder="Food name" /></td>
+              <td><input type="text" data-field="unit" placeholder="gm" value="gm" /></td>
+              <td><input type="number" step="0.00001" data-field="cal" /></td>
+              <td><input type="number" step="0.00001" data-field="protein" /></td>
+              <td><input type="number" step="0.00001" data-field="carb" /></td>
+              <td><input type="number" step="0.00001" data-field="fat" /></td>
+              <td><input type="number" step="0.00001" data-field="fiber" /></td>
+              <td><input type="number" step="0.00001" data-field="sugar" /></td>
+              <td><button id="add-food-btn">Add</button></td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Daily Targets</h2>
+      <div class="targets-form">
+        <label>Calories <input type="number" id="t-calorie" /></label>
+        <label>Protein (g) <input type="number" id="t-protein" /></label>
+        <label>Carb (g) <input type="number" id="t-carb" /></label>
+        <label>Fat min (g) <input type="number" id="t-fatmin" /></label>
+        <label>Fat max (g) <input type="number" id="t-fatmax" /></label>
+        <label>Fiber min (g) <input type="number" id="t-fibermin" /></label>
+        <label>Fiber max (g) <input type="number" id="t-fibermax" /></label>
+        <button id="save-targets-btn">Save Targets</button>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <p>All data is stored locally in your browser (localStorage).</p>
+</footer>
+
+<script src="js/foods.js"></script>
+<script src="js/storage.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
