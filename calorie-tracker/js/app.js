@@ -79,10 +79,44 @@ function initMealBuilder() {
   dateInput.value = currentDate;
   dateInput.addEventListener("change", () => {
     currentDate = dateInput.value || todayStr();
+    updateCopyDateDefault();
     renderMealBuilder();
   });
+
+  updateCopyDateDefault();
+
+  document.getElementById("copy-meals-btn").addEventListener("click", () => {
+    const copyDate = document.getElementById("copy-date").value;
+    if (!copyDate) return;
+    if (copyDate === currentDate) {
+      alert("Pick a different date to copy from.");
+      return;
+    }
+    const sourceMeals = Store.getDayMeals(copyDate);
+    const hasItems = SECTIONS.some((s) => sourceMeals[s].length > 0);
+    if (!hasItems) {
+      alert(`No meals found on ${copyDate}.`);
+      return;
+    }
+    const targetMeals = Store.getDayMeals(currentDate);
+    SECTIONS.forEach((s) => {
+      sourceMeals[s].forEach((row) => {
+        targetMeals[s].push({ food: row.food, qty: row.qty });
+      });
+    });
+    Store.setDayMeals(currentDate, targetMeals);
+    renderMealBuilder();
+  });
+
   renderTargetsReadout();
   renderMealBuilder();
+}
+
+// Default the "copy from" date to the day before the currently selected date.
+function updateCopyDateDefault() {
+  const d = new Date(currentDate);
+  d.setDate(d.getDate() - 1);
+  document.getElementById("copy-date").value = d.toISOString().slice(0, 10);
 }
 
 function renderTargetsReadout() {

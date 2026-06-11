@@ -177,7 +177,7 @@ button {
   font-family: inherit;
 }
 
-#save-height-btn, #add-weight-btn, #add-measurement-btn, #add-food-btn, #save-targets-btn {
+#save-height-btn, #add-weight-btn, #add-measurement-btn, #add-food-btn, #save-targets-btn, #copy-meals-btn {
   background: var(--primary);
   color: white;
   border: none;
@@ -187,7 +187,7 @@ button {
 }
 
 #save-height-btn:hover, #add-weight-btn:hover, #add-measurement-btn:hover,
-#add-food-btn:hover, #save-targets-btn:hover { background: var(--primary-dark); }
+#add-food-btn:hover, #save-targets-btn:hover, #copy-meals-btn:hover { background: var(--primary-dark); }
 
 .inline-form {
   display: flex;
