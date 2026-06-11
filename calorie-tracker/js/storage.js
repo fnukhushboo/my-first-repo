@@ -20,6 +20,47 @@ const DEFAULT_TARGETS = {
 
 const SECTIONS = ["Breakfast", "Lunch", "Dinner", "Snack 1", "Snack 2", "Snack 3", "Evening Snack"];
 
+// Template day seeded from the user's "9 Jun" Excel sheet. Use the "Copy meals from" feature
+// (copy from 2025-06-09) to reuse this as a starting point for other days.
+const TEMPLATE_DATE = "2025-06-09";
+const DEFAULT_MEALS = {
+  [TEMPLATE_DATE]: {
+    "Breakfast": [
+      { food: "Egg", qty: 2 },
+      { food: "Egg White", qty: 5.9348 },
+      { food: "Baked Walmart drumstick99", qty: 0.2179 },
+      { food: "Baked Beef15", qty: 0.2121 },
+      { food: "whole moong dal", qty: 1.5385 },
+      { food: "Rice", qty: 0.6667 },
+      { food: "Broccoli", qty: 0.3 },
+      { food: "Palak", qty: 0.3529 },
+      { food: "Beans", qty: 0.3 },
+      { food: "Onion", qty: 0.5 },
+      { food: "Tomato", qty: 0.5 },
+    ],
+    "Lunch": [],
+    "Dinner": [],
+    "Snack 1": [
+      { food: "nature own bread", qty: 2.4 },
+    ],
+    "Snack 2": [
+      { food: "Almonds", qty: 0.1 },
+      { food: "Walnut", qty: 0.1 },
+      { food: "Dates", qty: 0.75 },
+    ],
+    "Snack 3": [
+      { food: "Oats", qty: 1 },
+      { food: "Whey Protein", qty: 1.1 },
+      { food: "Milk", qty: 0.5 },
+      { food: "Mango", qty: 0.9091 },
+    ],
+    "Evening Snack": [
+      { food: "Milk", qty: 0.8333 },
+      { food: "cow ghee", qty: 0.6667 },
+    ],
+  },
+};
+
 // Seed measurement entry from the user's existing tracking sheet.
 const DEFAULT_MEASUREMENTS = [
   {
@@ -52,7 +93,7 @@ const Store = {
     saveJSON(STORAGE_KEYS.foods, foods);
   },
   getMeals() {
-    return loadJSON(STORAGE_KEYS.meals, {});
+    return loadJSON(STORAGE_KEYS.meals, DEFAULT_MEALS);
   },
   saveMeals(meals) {
     saveJSON(STORAGE_KEYS.meals, meals);
