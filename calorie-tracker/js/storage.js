@@ -93,7 +93,12 @@ const Store = {
     saveJSON(STORAGE_KEYS.foods, foods);
   },
   getMeals() {
-    return loadJSON(STORAGE_KEYS.meals, DEFAULT_MEALS);
+    const meals = loadJSON(STORAGE_KEYS.meals, DEFAULT_MEALS);
+    if (!meals[TEMPLATE_DATE]) {
+      meals[TEMPLATE_DATE] = DEFAULT_MEALS[TEMPLATE_DATE];
+      this.saveMeals(meals);
+    }
+    return meals;
   },
   saveMeals(meals) {
     saveJSON(STORAGE_KEYS.meals, meals);
