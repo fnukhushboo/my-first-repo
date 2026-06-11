@@ -148,8 +148,8 @@ th { color: var(--muted); font-weight: 600; font-size: 0.8rem; text-transform: u
   border-radius: 4px;
 }
 
-.food-row .qty-cell { width: 90px; }
-.food-row .unit-cell { width: 60px; color: var(--muted); }
+.food-row .qty-cell { width: 80px; }
+.food-row .unit-cell { width: 95px; color: var(--muted); white-space: nowrap; font-size: 0.8rem; }
 
 .remove-btn, .delete-btn {
   background: none;
