@@ -13,15 +13,24 @@ function getFoodByName(name) {
   return Store.getFoods().find((f) => f.name === name);
 }
 
+// Atwater factors: calories are derived from macros rather than taken from food labels,
+// since label calorie values are often inconsistent with their own macro breakdowns.
+function caloriesFromMacros(protein, carb, fat) {
+  return protein * 4 + carb * 4 + fat * 9;
+}
+
 function computeRowMacros(row) {
   const food = getFoodByName(row.food);
   const qty = Number(row.qty) || 0;
   if (!food) return { cal: 0, protein: 0, carb: 0, fat: 0, fiber: 0, sugar: 0 };
+  const protein = food.protein * qty;
+  const carb = food.carb * qty;
+  const fat = food.fat * qty;
   return {
-    cal: food.cal * qty,
-    protein: food.protein * qty,
-    carb: food.carb * qty,
-    fat: food.fat * qty,
+    cal: caloriesFromMacros(protein, carb, fat),
+    protein,
+    carb,
+    fat,
     fiber: food.fiber * qty,
     sugar: food.sugar * qty,
   };
@@ -500,7 +509,7 @@ function renderFoods() {
     tr.innerHTML = `
       <td>${f.name}</td>
       <td>${f.unit}</td>
-      <td>${f.cal}</td>
+      <td>${fmt(caloriesFromMacros(f.protein, f.carb, f.fat), 2)}</td>
       <td>${f.protein}</td>
       <td>${f.carb}</td>
       <td>${f.fat}</td>
