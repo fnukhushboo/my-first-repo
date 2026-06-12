@@ -140,7 +140,7 @@ function renderMealBuilder() {
       <h3>${section} <span class="section-subtotal">${fmt(subtotal.cal)} kcal | P ${fmt(subtotal.protein)} | C ${fmt(subtotal.carb)} | F ${fmt(subtotal.fat)} | Fib ${fmt(subtotal.fiber)}</span></h3>
       <table>
         <thead>
-          <tr><th>Food</th><th>Servings</th><th>Serving Size</th><th>Cal</th><th>Protein</th><th>Carb</th><th>Fat</th><th>Fiber</th><th></th></tr>
+          <tr><th>Food</th><th>Quantity</th><th>Unit</th><th>Cal</th><th>Protein</th><th>Carb</th><th>Fat</th><th>Fiber</th><th></th></tr>
         </thead>
         <tbody></tbody>
       </table>
