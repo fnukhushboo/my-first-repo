@@ -86,28 +86,69 @@ function initMealBuilder() {
   updateCopyDateDefault();
 
   document.getElementById("copy-meals-btn").addEventListener("click", () => {
-    const copyDate = document.getElementById("copy-date").value;
-    if (!copyDate) return;
-    if (copyDate === currentDate) {
-      alert("Pick a different date to copy from.");
-      return;
-    }
-    const sourceMeals = Store.getDayMeals(copyDate);
-    const hasItems = SECTIONS.some((s) => sourceMeals[s].length > 0);
-    if (!hasItems) {
-      alert(`No meals found on ${copyDate}.`);
-      return;
-    }
-    const targetMeals = Store.getDayMeals(currentDate);
-    SECTIONS.forEach((s) => {
-      targetMeals[s] = sourceMeals[s].map((row) => ({ food: row.food, qty: row.qty }));
-    });
-    Store.setDayMeals(currentDate, targetMeals);
-    renderMealBuilder();
+    copyMealsFrom(document.getElementById("copy-date").value);
   });
 
+  document.getElementById("copy-weekend-btn").addEventListener("click", () => {
+    copyMealsFrom(mostRecentSundayStr());
+  });
+
+  renderLast7DaysQuickPicks();
+  renderCopyWeekendBtn();
   renderTargetsReadout();
   renderMealBuilder();
+}
+
+// Copies the meals from `copyDate` onto `currentDate`, overwriting any existing entries.
+function copyMealsFrom(copyDate) {
+  if (!copyDate) return;
+  if (copyDate === currentDate) {
+    alert("Pick a different date to copy from.");
+    return;
+  }
+  const sourceMeals = Store.getDayMeals(copyDate);
+  const hasItems = SECTIONS.some((s) => sourceMeals[s].length > 0);
+  if (!hasItems) {
+    alert(`No meals found on ${copyDate}.`);
+    return;
+  }
+  const targetMeals = Store.getDayMeals(currentDate);
+  SECTIONS.forEach((s) => {
+    targetMeals[s] = sourceMeals[s].map((row) => ({ food: row.food, qty: row.qty }));
+  });
+  Store.setDayMeals(currentDate, targetMeals);
+  renderMealBuilder();
+}
+
+// Returns the date string (YYYY-MM-DD) of the most recent Sunday (today counts if it's Sunday).
+function mostRecentSundayStr() {
+  const d = new Date();
+  d.setDate(d.getDate() - d.getDay());
+  return d.toISOString().slice(0, 10);
+}
+
+function renderCopyWeekendBtn() {
+  const date = mostRecentSundayStr();
+  const btn = document.getElementById("copy-weekend-btn");
+  btn.textContent = `Copy from Weekend - (${date})`;
+}
+
+// Quick-pick buttons to set the "Copy meals from" date to one of the last 7 days.
+function renderLast7DaysQuickPicks() {
+  const container = document.getElementById("last-7-days");
+  container.innerHTML = "";
+  for (let i = 1; i <= 7; i++) {
+    const d = new Date();
+    d.setDate(d.getDate() - i);
+    const dateStr = d.toISOString().slice(0, 10);
+    const btn = document.createElement("button");
+    btn.className = "quick-date-btn";
+    btn.textContent = dateStr;
+    btn.addEventListener("click", () => {
+      document.getElementById("copy-date").value = dateStr;
+    });
+    container.appendChild(btn);
+  }
 }
 
 // Default the "copy from" date to yesterday.
