@@ -473,5 +473,7 @@ const DEFAULT_FOODS = [
   { name: "Raw Beef15", unit: "gm", cal: 1.51786, protein: 0.20536, carb: 0, fat: 0.07143, fiber: 0, sugar: 0 },
   { name: "Baked Beef15", unit: "gm", cal: 2.22355, protein: 0.30083, carb: 0, fat: 0.08894, fiber: 0, sugar: 0 },
   { name: "Raw Walmart drumstick100", unit: "gm", cal: 1.08929, protein: 0.19643, carb: 0, fat: 0.02857, fiber: 0, sugar: 0 },
+  { name: "Baked Walmart drumstick100", unit: "gm", cal: 1.52014, protein: 0.27412, carb: 0, fat: 0.03389, fiber: 0, sugar: 0 },
   { name: "Raw Beef16", unit: "gm", cal: 1.51786, protein: 0.20536, carb: 0, fat: 0.07143, fiber: 0, sugar: 0 },
+  { name: "Baked Beef16", unit: "gm", cal: 2.13913, protein: 0.28941, carb: 0, fat: 0.08557, fiber: 0, sugar: 0 },
 ];

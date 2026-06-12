@@ -17,7 +17,7 @@ const MOVE_DATE_FROM = "2026-06-12";
 const MOVE_DATE_TO = "2026-06-11";
 
 // Bump this whenever DEFAULT_FOODS changes so existing users pick up the new values.
-const FOODS_VERSION = 2;
+const FOODS_VERSION = 3;
 
 const DEFAULT_TARGETS = {
   calorie: 2000,
