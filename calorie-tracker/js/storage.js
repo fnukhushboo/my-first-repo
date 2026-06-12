@@ -7,6 +7,7 @@ const STORAGE_KEYS = {
   height: "ct_height",        // number (cm or inches, user's choice, stored as string)
   targets: "ct_targets",      // { calorie, protein, carb, fatMin, fatMax, fiberMin, fiberMax }
   unitsMigrated: "ct_units_migrated_v1", // flag: meal qty values converted from old serving units to grams
+  templateUnitsMigrated: "ct_template_units_migrated_v1", // flag: TEMPLATE_DATE qty values converted
   foodsVersion: "ct_foods_version", // tracks which version of DEFAULT_FOODS has been merged in
 };
 
@@ -588,8 +589,19 @@ const Store = {
         });
       });
     }
+    if (!isNewUser && !templateInjected && !localStorage.getItem(STORAGE_KEYS.templateUnitsMigrated)) {
+      // The earlier migration skipped TEMPLATE_DATE on the assumption it was always freshly
+      // injected, but users with real data saved on that date never got converted. Fix it now.
+      Object.values(meals[TEMPLATE_DATE]).forEach((rows) => {
+        (rows || []).forEach((row) => {
+          const grams = OLD_SERVING_GRAMS[row.food];
+          if (grams) row.qty = Math.round(row.qty * grams * 100) / 100;
+        });
+      });
+    }
     this.saveMeals(meals);
     localStorage.setItem(STORAGE_KEYS.unitsMigrated, "1");
+    localStorage.setItem(STORAGE_KEYS.templateUnitsMigrated, "1");
     return meals;
   },
   saveMeals(meals) {
