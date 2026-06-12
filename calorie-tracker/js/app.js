@@ -100,9 +100,7 @@ function initMealBuilder() {
     }
     const targetMeals = Store.getDayMeals(currentDate);
     SECTIONS.forEach((s) => {
-      sourceMeals[s].forEach((row) => {
-        targetMeals[s].push({ food: row.food, qty: row.qty });
-      });
+      targetMeals[s] = sourceMeals[s].map((row) => ({ food: row.food, qty: row.qty }));
     });
     Store.setDayMeals(currentDate, targetMeals);
     renderMealBuilder();
@@ -112,9 +110,9 @@ function initMealBuilder() {
   renderMealBuilder();
 }
 
-// Default the "copy from" date to the day before the currently selected date.
+// Default the "copy from" date to yesterday.
 function updateCopyDateDefault() {
-  const d = new Date(currentDate);
+  const d = new Date();
   d.setDate(d.getDate() - 1);
   document.getElementById("copy-date").value = d.toISOString().slice(0, 10);
 }

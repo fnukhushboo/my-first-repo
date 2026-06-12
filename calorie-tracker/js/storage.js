@@ -7,7 +7,11 @@ const STORAGE_KEYS = {
   height: "ct_height",        // number (cm or inches, user's choice, stored as string)
   targets: "ct_targets",      // { calorie, protein, carb, fatMin, fatMax, fiberMin, fiberMax }
   unitsMigrated: "ct_units_migrated_v1", // flag: meal qty values converted from old serving units to grams
+  foodsVersion: "ct_foods_version", // tracks which version of DEFAULT_FOODS has been merged in
 };
+
+// Bump this whenever DEFAULT_FOODS changes so existing users pick up the new values.
+const FOODS_VERSION = 2;
 
 const DEFAULT_TARGETS = {
   calorie: 2000,
@@ -550,7 +554,17 @@ function saveJSON(key, value) {
 
 const Store = {
   getFoods() {
-    return loadJSON(STORAGE_KEYS.foods, DEFAULT_FOODS);
+    const storedVersion = localStorage.getItem(STORAGE_KEYS.foodsVersion);
+    let foods = loadJSON(STORAGE_KEYS.foods, DEFAULT_FOODS);
+    if (storedVersion !== String(FOODS_VERSION)) {
+      // Refresh built-in foods with the latest values, keeping any custom foods the user added.
+      const defaultNames = new Set(DEFAULT_FOODS.map((f) => f.name));
+      const customFoods = foods.filter((f) => !defaultNames.has(f.name));
+      foods = [...DEFAULT_FOODS, ...customFoods];
+      this.saveFoods(foods);
+      localStorage.setItem(STORAGE_KEYS.foodsVersion, String(FOODS_VERSION));
+    }
+    return foods;
   },
   saveFoods(foods) {
     saveJSON(STORAGE_KEYS.foods, foods);
@@ -558,14 +572,14 @@ const Store = {
   getMeals() {
     const isNewUser = localStorage.getItem(STORAGE_KEYS.meals) === null;
     const meals = loadJSON(STORAGE_KEYS.meals, DEFAULT_MEALS);
-    if (!meals[TEMPLATE_DATE]) {
+    const templateInjected = !meals[TEMPLATE_DATE];
+    if (templateInjected) {
       meals[TEMPLATE_DATE] = DEFAULT_MEALS[TEMPLATE_DATE];
-      this.saveMeals(meals);
     }
     if (!isNewUser && !localStorage.getItem(STORAGE_KEYS.unitsMigrated)) {
       // Convert quantities for foods whose units changed from "Xg serving" to per-gram.
       Object.keys(meals).forEach((dateStr) => {
-        if (dateStr === TEMPLATE_DATE) return; // already stored in grams
+        if (dateStr === TEMPLATE_DATE && templateInjected) return; // freshly injected, already in grams
         Object.values(meals[dateStr]).forEach((rows) => {
           (rows || []).forEach((row) => {
             const grams = OLD_SERVING_GRAMS[row.food];
@@ -573,8 +587,8 @@ const Store = {
           });
         });
       });
-      this.saveMeals(meals);
     }
+    this.saveMeals(meals);
     localStorage.setItem(STORAGE_KEYS.unitsMigrated, "1");
     return meals;
   },
