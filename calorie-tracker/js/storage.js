@@ -9,7 +9,12 @@ const STORAGE_KEYS = {
   unitsMigrated: "ct_units_migrated_v1", // flag: meal qty values converted from old serving units to grams
   templateUnitsMigrated: "ct_template_units_migrated_v1", // flag: TEMPLATE_DATE qty values converted
   foodsVersion: "ct_foods_version", // tracks which version of DEFAULT_FOODS has been merged in
+  jun12MovedToJun11: "ct_2026_06_12_moved_to_06_11_v1", // flag: 2026-06-12 entries moved to 2026-06-11
 };
+
+// One-time move of meals entered under 2026-06-12 to 2026-06-11 (they were meant for that day).
+const MOVE_DATE_FROM = "2026-06-12";
+const MOVE_DATE_TO = "2026-06-11";
 
 // Bump this whenever DEFAULT_FOODS changes so existing users pick up the new values.
 const FOODS_VERSION = 2;
@@ -628,9 +633,17 @@ const Store = {
         });
       });
     }
+    if (!isNewUser && meals[MOVE_DATE_FROM] && !localStorage.getItem(STORAGE_KEYS.jun12MovedToJun11)) {
+      meals[MOVE_DATE_TO] = meals[MOVE_DATE_TO] || {};
+      SECTIONS.forEach((s) => {
+        meals[MOVE_DATE_TO][s] = (meals[MOVE_DATE_TO][s] || []).concat(meals[MOVE_DATE_FROM][s] || []);
+      });
+      delete meals[MOVE_DATE_FROM];
+    }
     this.saveMeals(meals);
     localStorage.setItem(STORAGE_KEYS.unitsMigrated, "1");
     localStorage.setItem(STORAGE_KEYS.templateUnitsMigrated, "1");
+    localStorage.setItem(STORAGE_KEYS.jun12MovedToJun11, "1");
     return meals;
   },
   saveMeals(meals) {

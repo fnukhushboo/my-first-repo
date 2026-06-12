@@ -101,6 +101,33 @@ main {
   color: var(--muted);
 }
 
+.quick-dates {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.quick-date-btn {
+  padding: 0.3rem 0.5rem;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: #fff;
+  cursor: pointer;
+  font-size: 0.8rem;
+}
+
+.quick-date-btn:hover { background: var(--primary-dark); color: #fff; }
+
+#copy-weekend-btn {
+  padding: 0.4rem 0.8rem;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: #fff;
+  cursor: pointer;
+}
+
+#copy-weekend-btn:hover { background: var(--primary-dark); color: #fff; }
+
 .section-card {
   background: var(--card-bg);
   border-radius: 10px;
