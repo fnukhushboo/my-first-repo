@@ -1,7 +1,7 @@
 // Thin wrapper around localStorage for all app data.
 const STORAGE_KEYS = {
   foods: "ct_foods",
-  meals: "ct_meals",          // { "YYYY-MM-DD": { "Breakfast": [{food, qty}], ... } }
+  meals: "ct_meals",          // { "YYYY-MM-DD": { "Breakfast/Lunch/Dinner": [{food, qty}], ... } }
   weights: "ct_weights",      // { "YYYY-MM-DD": number }
   measurements: "ct_measurements", // [{date, chest, bicepsL, bicepsR, hips, thighR, thighL, neck, forearmR, forearmL, wristR, wristL, shoulder, waist, pant, belly, weight, bfp}]
   height: "ct_height",        // number (cm or inches, user's choice, stored as string)
@@ -18,14 +18,14 @@ const DEFAULT_TARGETS = {
   fiberMax: 30,
 };
 
-const SECTIONS = ["Breakfast", "Lunch", "Dinner", "Snack 1", "Snack 2", "Snack 3", "Evening Snack"];
+const SECTIONS = ["Breakfast/Lunch/Dinner", "Snack 1", "Snack 2", "Snack 3", "Evening Snack"];
 
 // Template day seeded from the user's "9 Jun" Excel sheet. Use the "Copy meals from" feature
 // (copy from 2025-06-09) to reuse this as a starting point for other days.
 const TEMPLATE_DATE = "2025-06-09";
 const DEFAULT_MEALS = {
   [TEMPLATE_DATE]: {
-    "Breakfast": [
+    "Breakfast/Lunch/Dinner": [
       { food: "Egg", qty: 2 },
       { food: "Egg White", qty: 5.9348 },
       { food: "Baked Walmart drumstick99", qty: 0.2179 },
@@ -38,8 +38,6 @@ const DEFAULT_MEALS = {
       { food: "Onion", qty: 0.5 },
       { food: "Tomato", qty: 0.5 },
     ],
-    "Lunch": [],
-    "Dinner": [],
     "Snack 1": [
       { food: "nature own bread", qty: 2.4 },
     ],
@@ -108,6 +106,18 @@ const Store = {
     if (!meals[dateStr]) {
       meals[dateStr] = {};
       SECTIONS.forEach((s) => (meals[dateStr][s] = []));
+    }
+    // Migrate old separate Breakfast/Lunch/Dinner sections into the combined section.
+    const old = ["Breakfast", "Lunch", "Dinner"];
+    if (old.some((s) => meals[dateStr][s])) {
+      meals[dateStr]["Breakfast/Lunch/Dinner"] = meals[dateStr]["Breakfast/Lunch/Dinner"] || [];
+      old.forEach((s) => {
+        if (meals[dateStr][s]) {
+          meals[dateStr]["Breakfast/Lunch/Dinner"].push(...meals[dateStr][s]);
+          delete meals[dateStr][s];
+        }
+      });
+      this.saveMeals(meals);
     }
     SECTIONS.forEach((s) => {
       if (!meals[dateStr][s]) meals[dateStr][s] = [];
