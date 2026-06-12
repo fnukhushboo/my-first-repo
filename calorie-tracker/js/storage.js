@@ -65,6 +65,31 @@ const DEFAULT_MEALS = {
   },
 };
 
+// The TEMPLATE_DATE quantities as they were before the per-gram unit conversion (PR#8),
+// keyed by food name. Used to detect whether a user's saved TEMPLATE_DATE entry still
+// has the old serving-based quantities, so the migration can be applied exactly once
+// regardless of when it ran relative to the main unit migration.
+const OLD_TEMPLATE_QTY = {
+  "Egg White": [5.9348],
+  "Baked Walmart drumstick99": [0.2179],
+  "Baked Beef15": [0.2121],
+  "whole moong dal": [1.5385],
+  "Rice": [0.6667],
+  "Broccoli": [0.3],
+  "Palak": [0.3529],
+  "Beans": [0.3],
+  "Onion": [0.5],
+  "Tomato": [0.5],
+  "nature own bread": [2.4],
+  "Almonds": [0.1],
+  "Walnut": [0.1],
+  "Dates": [0.75],
+  "Oats": [1],
+  "Milk": [0.5, 0.8333],
+  "Mango": [0.9091],
+  "cow ghee": [0.6667],
+};
+
 // Maps food names to their old per-serving gram size, used once to migrate
 // existing meal quantities from the old "servings" units to grams.
 const OLD_SERVING_GRAMS = {
@@ -591,11 +616,15 @@ const Store = {
     }
     if (!isNewUser && !templateInjected && !localStorage.getItem(STORAGE_KEYS.templateUnitsMigrated)) {
       // The earlier migration skipped TEMPLATE_DATE on the assumption it was always freshly
-      // injected, but users with real data saved on that date never got converted. Fix it now.
+      // injected, but users with real data saved on that date never got converted. Only convert
+      // rows whose quantity still matches the old serving-based template value, so this stays
+      // idempotent whether or not the main migration above already converted this date.
       Object.values(meals[TEMPLATE_DATE]).forEach((rows) => {
         (rows || []).forEach((row) => {
           const grams = OLD_SERVING_GRAMS[row.food];
-          if (grams) row.qty = Math.round(row.qty * grams * 100) / 100;
+          const oldQtys = OLD_TEMPLATE_QTY[row.food];
+          const isOldQty = oldQtys && oldQtys.some((q) => Math.abs(row.qty - q) < 0.0001);
+          if (grams && isOldQty) row.qty = Math.round(row.qty * grams * 100) / 100;
         });
       });
     }
